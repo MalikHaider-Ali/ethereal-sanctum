@@ -12,7 +12,8 @@ export default function LenisProvider({
     let rafId: number;
 
     async function initLenis() {
-      const LenisModule = await import("@studio-freight/lenis");
+      // Updated import - using 'lenis' instead of '@studio-freight/lenis'
+      const LenisModule = await import("lenis");
       const Lenis = LenisModule.default;
 
       lenis = new Lenis({

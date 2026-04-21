@@ -39,11 +39,13 @@ html.lenis {
   pointer-events: none;
 }
 
+/* Glassmorphism effects */
 .glass-nav {
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
 }
 
+/* Hide scrollbar utilities */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -51,4 +53,36 @@ html.lenis {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Font utility classes - Make sure fonts are applied correctly */
+.font-newsreader {
+  font-family: var(--font-newsreader), Georgia, Times New Roman, serif;
+}
+
+.font-inter {
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+}
+
+/* Optional: Apply default body font */
+body {
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+}
+
+/* Heading styles using Newsreader */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-newsreader), Georgia, Times New Roman, serif;
+}
+
+/* Optional: Smooth scrolling performance tweaks */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure proper font loading */
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    scroll-behavior: auto;
+  }
 }

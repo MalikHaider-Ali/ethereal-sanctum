@@ -55,12 +55,17 @@ const config: Config = {
         full: "9999px",
       },
       fontFamily: {
-        headline: ["Newsreader", "serif"],
-        body: ["Inter", "sans-serif"],
-        label: ["Inter", "sans-serif"],
+        // Use CSS variables from next/font with fallbacks
+        headline: ["var(--font-newsreader)", "Georgia", "Times New Roman", "serif"],
+        body: ["var(--font-inter)", "system-ui", "-apple-system", "sans-serif"],
+        label: ["var(--font-inter)", "system-ui", "-apple-system", "sans-serif"],
+        // Add these for convenience
+        newsreader: ["var(--font-newsreader)", "Georgia", "Times New Roman", "serif"],
+        inter: ["var(--font-inter)", "system-ui", "-apple-system", "sans-serif"],
       },
     },
   },
   plugins: [],
 };
+
 export default config;
