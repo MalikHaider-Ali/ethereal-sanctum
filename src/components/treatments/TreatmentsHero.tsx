@@ -2,38 +2,18 @@
 
 import Image from "next/image";
 import { useRef } from "react";
-import {
-  motion,
-  useMotionValue,
-  useSpring,
-  useTransform,
-  useScroll,
-} from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion";
 
 export default function TreatmentsHero() {
   const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-
-  // Scroll parallax on the bleed image
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const textY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
 
-  // Pointer tilt on headline
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const rotateX = useSpring(useTransform(mouseY, [-300, 300], [4, -4]), {
-    stiffness: 80,
-    damping: 22,
-  });
-  const rotateY = useSpring(useTransform(mouseX, [-600, 600], [-4, 4]), {
-    stiffness: 80,
-    damping: 22,
-  });
-
-  // Pointer glow
+  const rotateX = useSpring(useTransform(mouseY, [-300, 300], [4, -4]), { stiffness: 80, damping: 22 });
+  const rotateY = useSpring(useTransform(mouseX, [-600, 600], [-4, 4]), { stiffness: 80, damping: 22 });
   const glowX = useSpring(mouseX, { stiffness: 40, damping: 16 });
   const glowY = useSpring(mouseY, { stiffness: 40, damping: 16 });
 
@@ -42,34 +22,28 @@ export default function TreatmentsHero() {
     mouseX.set(e.clientX - rect.left - rect.width / 2);
     mouseY.set(e.clientY - rect.top - rect.height / 2);
   };
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-  };
+  const handleMouseLeave = () => { mouseX.set(0); mouseY.set(0); };
 
   return (
     <header
       ref={ref}
-      className="px-12 mb-24 relative overflow-hidden"
+      className="px-6 md:px-12 mb-16 md:mb-24 relative overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
       <div className="max-w-7xl mx-auto relative">
-        {/* Pointer ambient glow */}
         <motion.div
-          className="absolute pointer-events-none z-0 w-[600px] h-[600px] rounded-full -translate-x-1/2 -translate-y-1/2"
+          className="absolute pointer-events-none z-0 w-[400px] md:w-[600px] h-[400px] md:h-[600px] rounded-full -translate-x-1/2 -translate-y-1/2"
           style={{
             left: `calc(30% + ${glowX}px)`,
             top: `calc(50% + ${glowY}px)`,
-            background:
-              "radial-gradient(circle, rgba(230,213,180,0.07) 0%, transparent 65%)",
+            background: "radial-gradient(circle, rgba(230,213,180,0.07) 0%, transparent 65%)",
           }}
         />
 
         <motion.div className="relative z-10" style={{ y: textY }}>
-          {/* Label */}
           <motion.p
-            className="text-secondary font-label tracking-[0.4em] uppercase text-xs mb-6"
+            className="text-secondary font-label tracking-[0.4em] uppercase text-xs mb-4 md:mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.2 }}
@@ -77,20 +51,12 @@ export default function TreatmentsHero() {
             Alchemy of Self
           </motion.p>
 
-          {/* Headline with pointer tilt */}
-          <motion.div
-            style={{ rotateX, rotateY, perspective: 1200 }}
-            className="transform-gpu"
-          >
+          <motion.div style={{ rotateX, rotateY, perspective: 1200 }} className="transform-gpu">
             <motion.h1
-              className="font-headline text-8xl md:text-9xl leading-none text-primary -ml-1 tracking-tighter"
+              className="font-headline text-[clamp(3.5rem,10vw,8rem)] leading-none text-primary -ml-0.5 md:-ml-1 tracking-tighter"
               initial={{ opacity: 0, y: 60 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 1.1,
-                delay: 0.4,
-                ease: [0.25, 0.46, 0.45, 0.94],
-              }}
+              transition={{ duration: 1.1, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               Our <br />
               <motion.span
@@ -104,23 +70,21 @@ export default function TreatmentsHero() {
             </motion.h1>
           </motion.div>
 
-          {/* Body copy */}
           <motion.div
-            className="mt-12 max-w-xl text-on-surface-variant leading-relaxed text-lg font-light"
+            className="mt-8 md:mt-12 max-w-xl text-on-surface-variant leading-relaxed text-base md:text-lg font-light"
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 1.0 }}
           >
             Where clinical precision meets organic luxury. Discover our curated
-            collection of transformative rituals designed for the modern
-            alchemist.
+            collection of transformative rituals designed for the modern alchemist.
           </motion.div>
         </motion.div>
       </div>
 
-      {/* Decorative bleed image — parallax on scroll */}
+      {/* Bleed image — hidden on small screens */}
       <motion.div
-        className="absolute -right-24 top-0 w-1/3 aspect-[3/4] opacity-40 pointer-events-none"
+        className="hidden lg:block absolute -right-24 top-0 w-1/3 aspect-[3/4] opacity-40 pointer-events-none"
         style={{ y: imageY }}
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 0.4, x: 0 }}

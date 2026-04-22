@@ -1,22 +1,22 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { staggerContainer, fadeUp, viewportOnce } from "../animations";
+import { staggerContainer, fadeUp, viewportOnce } from "./animations";
 
 export default function Footer() {
   return (
-    <footer className="w-full px-12 py-20 grid grid-cols-1 md:grid-cols-3 gap-16 bg-[#100e0b] border-t border-[#4b463d]/30">
+    <footer className="w-full px-6 md:px-12 py-16 md:py-20 grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 bg-[#100e0b] border-t border-[#4b463d]/30">
       <motion.div
-        className="space-y-8"
+        className="space-y-6 md:space-y-8"
         variants={fadeUp}
         initial="hidden"
         whileInView="visible"
         viewport={viewportOnce}
       >
-        <div className="font-headline italic text-[#e6d5b4] text-3xl">
+        <div className="font-headline italic text-[#e6d5b4] text-2xl md:text-3xl">
           Ethereal Sanctum
         </div>
-        <p className="font-headline italic text-2xl text-[#e6d5b4] opacity-80 leading-snug">
+        <p className="font-headline italic text-xl md:text-2xl text-[#e6d5b4] opacity-80 leading-snug">
           Designed for Digital Alchemists.
         </p>
       </motion.div>
@@ -28,7 +28,7 @@ export default function Footer() {
         ].map((col) => (
           <motion.div
             key={col.heading}
-            className="space-y-6"
+            className="space-y-4 md:space-y-6"
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
@@ -40,7 +40,7 @@ export default function Footer() {
             >
               {col.heading}
             </motion.p>
-            <nav className="flex flex-col gap-4">
+            <nav className="flex flex-col gap-3 md:gap-4">
               {col.links.map((item) => (
                 <motion.a
                   key={item}
@@ -57,7 +57,7 @@ export default function Footer() {
       </div>
 
       <motion.div
-        className="space-y-8"
+        className="space-y-6 md:space-y-8"
         variants={fadeUp}
         initial="hidden"
         whileInView="visible"
@@ -68,7 +68,7 @@ export default function Footer() {
         </p>
         <div className="relative group">
           <input
-            className="w-full bg-transparent border-b border-outline-variant/30 py-4 font-body text-sm focus:outline-none focus:border-primary transition-colors placeholder:text-on-surface-variant/40"
+            className="w-full bg-transparent border-b border-outline-variant/30 py-3 md:py-4 font-body text-sm focus:outline-none focus:border-primary transition-colors placeholder:text-on-surface-variant/40"
             placeholder="Your Email Address"
             type="email"
           />
@@ -76,7 +76,7 @@ export default function Footer() {
             <span className="material-symbols-outlined text-primary">arrow_forward</span>
           </button>
         </div>
-        <div className="pt-8">
+        <div className="pt-4 md:pt-8">
           <p className="text-[#cec5b9] font-label text-[10px] tracking-widest">
             © 2024 ETHEREAL SANCTUM. ALL RIGHTS RESERVED.
           </p>

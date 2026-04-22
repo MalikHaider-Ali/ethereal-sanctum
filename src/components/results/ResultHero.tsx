@@ -1,10 +1,9 @@
 "use client";
 
 import { useMotionValue, useSpring, useTransform, motion } from "framer-motion";
-import { staggerContainer, viewportOnce } from "../animations";
+import { staggerContainer } from "../animations";
 
 export default function ResultsHero() {
-  // Pointer tilt on headline
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const rotateX = useSpring(useTransform(mouseY, [-200, 200], [3, -3]), { stiffness: 80, damping: 22 });
@@ -21,11 +20,10 @@ export default function ResultsHero() {
 
   return (
     <header
-      className="mb-24 text-center relative"
+      className="mb-16 md:mb-24 text-center relative"
       onMouseMove={handleMove}
       onMouseLeave={handleLeave}
     >
-      {/* Pointer glow */}
       <motion.div
         className="absolute pointer-events-none -inset-20 z-0"
         style={{
@@ -40,7 +38,7 @@ export default function ResultsHero() {
         animate="visible"
       >
         <motion.h1
-          className="font-headline text-7xl md:text-8xl text-primary font-light tracking-tight leading-none mb-6"
+          className="font-headline text-[clamp(3rem,8vw,6rem)] md:text-7xl lg:text-8xl text-primary font-light tracking-tight leading-none mb-4 md:mb-6"
           style={{ rotateX, rotateY, perspective: 1000 }}
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -58,7 +56,7 @@ export default function ResultsHero() {
         </motion.h1>
 
         <motion.p
-          className="text-on-surface-variant text-lg max-w-2xl mx-auto font-light leading-relaxed"
+          className="text-on-surface-variant text-base md:text-lg max-w-2xl mx-auto font-light leading-relaxed px-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}

@@ -2,14 +2,11 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { staggerContainer, fadeUp, fadeIn } from "./animations";
+import { staggerContainer, fadeUp } from "./animations";
 
 export default function HeroSection() {
-  const words = ["Reveal", "Your", "Most", "Radiant", "Self"];
-
   return (
-    <section className="relative h-screen flex flex-col justify-center items-center text-center px-6 overflow-hidden">
-      {/* Background radial gradient */}
+    <section className="relative h-screen min-h-[600px] flex flex-col justify-center items-center text-center px-4 md:px-6 overflow-hidden">
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background z-10" />
         <motion.div
@@ -21,14 +18,13 @@ export default function HeroSection() {
       </div>
 
       <motion.div
-        className="relative z-20 max-w-5xl space-y-12"
+        className="relative z-20 max-w-5xl w-full space-y-8 md:space-y-12"
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
       >
-        {/* Animated headline — word by word */}
         <motion.h1
-          className="font-headline font-light italic text-[clamp(48px,8vw,88px)] leading-[1.1] text-on-background tracking-tight"
+          className="font-headline font-light italic text-[clamp(38px,8vw,88px)] leading-[1.1] text-on-background tracking-tight"
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
@@ -60,7 +56,7 @@ export default function HeroSection() {
         </motion.h1>
 
         <motion.p
-          className="font-body text-on-surface-variant text-lg max-w-2xl mx-auto tracking-wide leading-relaxed"
+          className="font-body text-on-surface-variant text-base md:text-lg max-w-2xl mx-auto tracking-wide leading-relaxed px-4"
           variants={fadeUp}
           initial="hidden"
           animate="visible"
@@ -71,7 +67,7 @@ export default function HeroSection() {
         </motion.p>
 
         <motion.div
-          className="flex flex-wrap justify-center gap-6"
+          className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 md:gap-6 px-4"
           variants={fadeUp}
           initial="hidden"
           animate="visible"
@@ -79,7 +75,7 @@ export default function HeroSection() {
         >
           <Link href="/treatments">
             <motion.button
-              className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-10 py-5 rounded-full font-label text-sm tracking-widest uppercase hover:scale-95 transition-all duration-500"
+              className="w-full sm:w-auto bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 md:px-10 py-4 md:py-5 rounded-full font-label text-sm tracking-widest uppercase"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -88,7 +84,7 @@ export default function HeroSection() {
           </Link>
           <Link href="/about">
             <motion.button
-              className="border border-outline-variant/30 text-primary px-10 py-5 rounded-full font-label text-sm tracking-widest uppercase hover:bg-primary/5 transition-all duration-500"
+              className="w-full sm:w-auto border border-outline-variant/30 text-primary px-8 md:px-10 py-4 md:py-5 rounded-full font-label text-sm tracking-widest uppercase hover:bg-primary/5 transition-all duration-500"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.95 }}
             >

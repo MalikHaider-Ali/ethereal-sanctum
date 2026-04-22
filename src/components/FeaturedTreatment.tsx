@@ -7,9 +7,8 @@ import { slideLeft, slideRight, fadeUp, staggerContainer, viewportOnce } from ".
 export default function FeaturedTreatment() {
   return (
     <section className="min-h-screen flex flex-col md:flex-row overflow-hidden">
-      {/* Left panel — slides in from left */}
       <motion.div
-        className="flex-1 p-12 md:p-24 flex flex-col justify-center space-y-12 bg-surface-container-low"
+        className="flex-1 p-8 md:p-12 lg:p-24 flex flex-col justify-center space-y-8 md:space-y-12 bg-surface-container-low"
         variants={slideLeft}
         initial="hidden"
         whileInView="visible"
@@ -26,7 +25,7 @@ export default function FeaturedTreatment() {
         </motion.span>
 
         <motion.h2
-          className="font-headline text-7xl text-primary leading-tight"
+          className="font-headline text-[clamp(3rem,8vw,5rem)] text-primary leading-tight"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={viewportOnce}
@@ -36,7 +35,7 @@ export default function FeaturedTreatment() {
         </motion.h2>
 
         <motion.p
-          className="font-body text-on-surface-variant text-lg max-w-md leading-relaxed"
+          className="font-body text-on-surface-variant text-base md:text-lg max-w-md leading-relaxed"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={viewportOnce}
@@ -48,7 +47,7 @@ export default function FeaturedTreatment() {
         </motion.p>
 
         <motion.div
-          className="space-y-6"
+          className="space-y-4 md:space-y-6"
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
@@ -61,13 +60,13 @@ export default function FeaturedTreatment() {
           ].map((benefit, i) => (
             <motion.div
               key={benefit}
-              className="flex items-center gap-4"
+              className="flex items-center gap-3 md:gap-4"
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={viewportOnce}
               transition={{ duration: 0.6, delay: 0.4 + i * 0.12 }}
             >
-              <span className="material-symbols-outlined text-primary">check_circle</span>
+              <span className="material-symbols-outlined text-primary text-lg md:text-xl">check_circle</span>
               <span className="font-body text-sm text-on-background">{benefit}</span>
             </motion.div>
           ))}
@@ -84,9 +83,8 @@ export default function FeaturedTreatment() {
         </motion.button>
       </motion.div>
 
-      {/* Right image — slides in from right */}
       <motion.div
-        className="flex-1 bg-surface-variant relative overflow-hidden min-h-[500px]"
+        className="flex-1 bg-surface-variant relative overflow-hidden min-h-[360px] md:min-h-[500px]"
         variants={slideRight}
         initial="hidden"
         whileInView="visible"
@@ -97,10 +95,9 @@ export default function FeaturedTreatment() {
           alt="Serene woman with perfect skin"
           fill
           className="object-cover"
-          sizes="50vw"
+          sizes="(max-width: 768px) 100vw, 50vw"
         />
         <div className="absolute inset-0 bg-primary/10 mix-blend-overlay" />
-        {/* Shimmer overlay on enter */}
         <motion.div
           className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent"
           initial={{ x: "-100%" }}
