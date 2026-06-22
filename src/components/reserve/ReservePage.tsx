@@ -9,12 +9,27 @@ import CalendarPicker from "./CalendarPicker";
 import ReserveForm from "./ReserveForm";
 import SummaryCard from "./SummaryCard";
 
+// Define your treatments data (or import from a shared file)
+const treatments = [
+  { id: "1", name: "Celestial Attunement" },
+  { id: "2", name: "Oceanic Drift" },
+  // ... add all your treatments
+];
+
 export default function ReservePage() {
   const searchParams = useSearchParams();
   const [selectedTreatment, setSelectedTreatment] = useState("Celestial Attunement");
+  const [treatmentId, setTreatmentId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [selectedTime, setSelectedTime] = useState("02:15 PM");
+  const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
+
+  // Update treatment ID when treatment name changes
+  useEffect(() => {
+    const treatment = treatments.find(t => t.name === selectedTreatment);
+    setTreatmentId(treatment?.id || null);
+  }, [selectedTreatment]);
 
   // Pre-select treatment from URL param e.g. /reserve?treatment=Oceanic+Drift
   useEffect(() => {
@@ -93,20 +108,27 @@ export default function ReservePage() {
             <ReserveHero />
             <TreatmentSelector
               selected={selectedTreatment}
-              onSelect={setSelectedTreatment}
+              onSelect={setSelectedTreatment} // This now only takes the treatment name
             />
           </section>
 
           {/* Step 2 */}
           <CalendarPicker
+            treatmentId={treatmentId}
             selectedDate={selectedDate}
             selectedTime={selectedTime}
+            selectedSlotId={selectedSlotId}
             onDateSelect={(d: Date) => setSelectedDate(d)}
-            onTimeSelect={setSelectedTime}
+            onTimeSelect={(t: string) => setSelectedTime(t)}
+            onSlotSelect={(id: string | null) => setSelectedSlotId(id)}
           />
 
           {/* Step 3 */}
-          <ReserveForm onSuccess={() => setConfirmed(true)} />
+          <ReserveForm 
+            treatmentId={treatmentId}
+            slotId={selectedSlotId}
+            onSuccess={() => setConfirmed(true)}
+          />
         </div>
 
         {/* Right: sticky summary */}
