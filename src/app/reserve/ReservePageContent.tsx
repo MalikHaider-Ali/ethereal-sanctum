@@ -9,13 +9,83 @@ import CalendarPicker from "@/components/reserve/CalendarPicker";
 import ReserveForm from "@/components/reserve/ReserveForm";
 import SummaryCard from "@/components/reserve/SummaryCard";
 
+// Define Treatment type locally
+interface Treatment {
+  id: string;
+  name: string;
+  duration: number;
+  category: string;
+  description: string;
+  price: number;
+}
+
+// Static treatments data
+const staticTreatments: Treatment[] = [
+  {
+    id: "1",
+    name: "Luminous Facial",
+    duration: 75,
+    category: "Face",
+    description: "A regenerative journey utilizing ionized gold particles and deep cellular hydration.",
+    price: 240,
+  },
+  {
+    id: "2",
+    name: "Serenova Ritual",
+    duration: 120,
+    category: "Rituals",
+    description: "Our flagship sensory experience blending hot stone therapy with vibrational sound healing.",
+    price: 420,
+  },
+  {
+    id: "3",
+    name: "Obsidian Body Wrap",
+    duration: 90,
+    category: "Body",
+    description: "Detoxifying volcanic clay infusion followed by a silk-protein moisture seal.",
+    price: 310,
+  },
+  {
+    id: "4",
+    name: "Molecular Sculpt",
+    duration: 60,
+    category: "Face",
+    description: "Targeted micro-current technology that lifts and defines facial contours.",
+    price: 190,
+  },
+  {
+    id: "5",
+    name: "Celestial Attunement",
+    duration: 90,
+    category: "Rituals",
+    description: "Crystal healing and energy work to restore your natural balance.",
+    price: 380,
+  },
+];
+
 export default function ReservePageContent() {
   const searchParams = useSearchParams();
+  const [treatments, setTreatments] = useState<Treatment[]>(staticTreatments);
   const [selectedTreatment, setSelectedTreatment] = useState("Celestial Attunement");
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [selectedTime, setSelectedTime] = useState("02:15 PM");
+  const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
+
+  // Initialize treatments and handle URL param
+  useEffect(() => {
+    // Set treatments immediately with static data
+    setTreatments(staticTreatments);
+    
+    // If URL param is set, respect it
+    const param = searchParams.get("treatment");
+    if (param) {
+      setSelectedTreatment(decodeURIComponent(param));
+    } else {
+      setSelectedTreatment(staticTreatments[0].name);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const param = searchParams.get("treatment");
@@ -27,11 +97,18 @@ export default function ReservePageContent() {
     }
   }, [searchParams]);
 
+  // Reset selected slot if treatment or date changes
+  useEffect(() => {
+    setSelectedSlotId(null);
+  }, [selectedTreatment, selectedDate]);
+
   // Format date for display
   const formatDate = (date: Date | null): string => {
     if (!date) return "";
     return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
   };
+
+  const selectedTreatmentObj = treatments.find(t => t.name === selectedTreatment) || null;
 
   return (
     <>
@@ -138,15 +215,26 @@ export default function ReservePageContent() {
         <div className="lg:col-span-8 space-y-16 md:space-y-24">
           <section className="space-y-10 md:space-y-12" id="treatment-selector">
             <ReserveHero />
-            <TreatmentSelector selected={selectedTreatment} onSelect={setSelectedTreatment} />
+            <TreatmentSelector 
+              selected={selectedTreatment} 
+              onSelect={setSelectedTreatment} 
+              treatments={treatments}
+            />
           </section>
           <CalendarPicker
+            treatmentId={selectedTreatmentObj?.id || null}
             selectedDate={selectedDate}
             selectedTime={selectedTime}
+            selectedSlotId={selectedSlotId}
             onDateSelect={setSelectedDate}
             onTimeSelect={setSelectedTime}
+            onSlotSelect={setSelectedSlotId}
           />
-          <ReserveForm onSuccess={() => setConfirmed(true)} />
+          <ReserveForm 
+            treatmentId={selectedTreatmentObj?.id || null}
+            slotId={selectedSlotId}
+            onSuccess={() => setConfirmed(true)} 
+          />
         </div>
 
         {/* Right: sticky summary — desktop only */}

@@ -1,15 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { viewportOnce, staggerContainer, fadeUp } from "../animations";
+
+// Define TimeSlot interface locally
+interface TimeSlot {
+  id: string;
+  startTime: string;
+  endTime: string;
+  isAvailable: boolean;
+}
 
 const DAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 const MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
 ];
-const TIME_SLOTS = ["09:00 AM", "11:30 AM", "02:15 PM", "04:45 PM", "06:00 PM", "08:30 PM"];
+const FALLBACK_TIME_SLOTS = ["09:00 AM", "11:30 AM", "02:15 PM", "04:45 PM", "06:00 PM", "08:30 PM"];
+
+// Static time slots data
+const staticTimeSlots: TimeSlot[] = [
+  { id: "slot1", startTime: "2024-01-01T09:00:00", endTime: "2024-01-01T09:30:00", isAvailable: true },
+  { id: "slot2", startTime: "2024-01-01T11:30:00", endTime: "2024-01-01T12:00:00", isAvailable: true },
+  { id: "slot3", startTime: "2024-01-01T14:15:00", endTime: "2024-01-01T14:45:00", isAvailable: true },
+  { id: "slot4", startTime: "2024-01-01T16:45:00", endTime: "2024-01-01T17:15:00", isAvailable: false },
+  { id: "slot5", startTime: "2024-01-01T18:00:00", endTime: "2024-01-01T18:30:00", isAvailable: true },
+  { id: "slot6", startTime: "2024-01-01T20:30:00", endTime: "2024-01-01T21:00:00", isAvailable: true },
+];
 
 /** Returns the calendar grid for a given month.
  *  Each cell: { day, month: "prev"|"current"|"next", date: Date }
@@ -42,16 +60,35 @@ function buildCalendarGrid(year: number, month: number) {
   return cells;
 }
 
+const formatTimeSlot = (isoString: string): string => {
+  try {
+    const d = new Date(isoString);
+    return d.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  } catch {
+    return "09:00 AM";
+  }
+};
+
 export default function CalendarPicker({
+  treatmentId,
   selectedDate,
   selectedTime,
+  selectedSlotId,
   onDateSelect,
   onTimeSelect,
+  onSlotSelect,
 }: {
+  treatmentId: string | null;
   selectedDate: Date | null;
   selectedTime: string;
+  selectedSlotId: string | null;
   onDateSelect: (d: Date) => void;
   onTimeSelect: (t: string) => void;
+  onSlotSelect: (id: string | null) => void;
 }) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -59,6 +96,24 @@ export default function CalendarPicker({
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [slideDir, setSlideDir] = useState<1 | -1>(1);
+
+  const [slots, setSlots] = useState<TimeSlot[]>(staticTimeSlots);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+
+  // Generate slots based on selected date (static)
+  useEffect(() => {
+    if (!treatmentId || !selectedDate) {
+      setSlots([]);
+      return;
+    }
+
+    setLoadingSlots(true);
+    // Simulate loading delay
+    setTimeout(() => {
+      setSlots(staticTimeSlots);
+      setLoadingSlots(false);
+    }, 300);
+  }, [treatmentId, selectedDate]);
 
   const cells = buildCalendarGrid(viewYear, viewMonth);
 
@@ -228,40 +283,64 @@ export default function CalendarPicker({
           viewport={viewportOnce}
           transition={{ duration: 0.8, delay: 0.25 }}
         >
-          <span className="block font-label text-xs tracking-widest uppercase text-on-surface-variant">
-            Available Hours
-          </span>
-          <div className="grid grid-cols-2 gap-4">
-            {TIME_SLOTS.map((slot, i) => {
-              const isActive = slot === selectedTime;
-              return (
-                <motion.button
-                  key={slot}
-                  onClick={() => onTimeSelect(slot)}
-                  className={`py-4 rounded-full font-label text-sm tracking-widest transition-all duration-300 relative overflow-hidden ${
-                    isActive
-                      ? "border border-primary bg-primary/10 text-primary"
-                      : "border border-outline-variant/30 hover:border-primary text-on-surface"
-                  }`}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={viewportOnce}
-                  transition={{ delay: 0.3 + i * 0.07 }}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                >
-                  {isActive && (
-                    <motion.span
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent pointer-events-none"
-                      animate={{ x: ["-100%", "200%"] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    />
-                  )}
-                  {slot}
-                </motion.button>
-              );
-            })}
+          <div className="flex justify-between items-center">
+            <span className="block font-label text-xs tracking-widest uppercase text-on-surface-variant">
+              Available Hours
+            </span>
+            <span className="text-[9px] tracking-widest uppercase text-[#cec5b9]/40 font-label">
+              Static Availability
+            </span>
           </div>
+
+          {loadingSlots ? (
+            <div className="py-12 text-center text-xs tracking-[0.2em] font-label text-primary uppercase animate-pulse">
+              Consulting calendar archives...
+            </div>
+          ) : slots.length === 0 ? (
+            <div className="py-12 text-center text-xs tracking-[0.2em] font-label text-[#cec5b9]/40 uppercase">
+              No slots remaining for this date.
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              {slots.map((slot, i) => {
+                const formattedTime = formatTimeSlot(slot.startTime);
+                const isActive = slot.id === selectedSlotId;
+                const isAvailable = slot.isAvailable;
+
+                return (
+                  <motion.button
+                    key={slot.id}
+                    disabled={!isAvailable}
+                    onClick={() => {
+                      onTimeSelect(formattedTime);
+                      onSlotSelect(slot.id);
+                    }}
+                    className={`py-4 rounded-full font-label text-sm tracking-widest transition-all duration-300 relative overflow-hidden ${
+                      isActive
+                        ? "border border-primary bg-primary/10 text-primary"
+                        : !isAvailable
+                        ? "border border-outline-variant/10 text-on-surface-variant/20 cursor-not-allowed"
+                        : "border border-outline-variant/30 hover:border-primary text-on-surface"
+                    }`}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    whileHover={isAvailable ? { scale: 1.03 } : {}}
+                    whileTap={isAvailable ? { scale: 0.97 } : {}}
+                  >
+                    {isActive && (
+                      <motion.span
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent pointer-events-none"
+                        animate={{ x: ["-100%", "200%"] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      />
+                    )}
+                    {formattedTime}
+                  </motion.button>
+                );
+              })}
+            </div>
+          )}
         </motion.div>
       </div>
     </motion.section>

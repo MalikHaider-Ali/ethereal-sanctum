@@ -10,11 +10,15 @@ function GlowInput({
   type = "text",
   placeholder,
   fullWidth = false,
+  value = "",
+  onChange,
 }: {
   label: string;
   type?: string;
   placeholder?: string;
   fullWidth?: boolean;
+  value?: string;
+  onChange?: (val: string) => void;
 }) {
   const [focused, setFocused] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -43,6 +47,8 @@ function GlowInput({
         {type === "textarea" ? (
           <textarea
             placeholder={placeholder}
+            value={value}
+            onChange={(e) => onChange?.(e.target.value)}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             className="w-full bg-transparent border-0 border-b border-outline-variant py-4 text-xl placeholder:text-surface-variant focus:ring-0 focus:outline-none resize-none h-32 transition-colors duration-300"
@@ -52,6 +58,8 @@ function GlowInput({
           <input
             type={type}
             placeholder={placeholder}
+            value={value}
+            onChange={(e) => onChange?.(e.target.value)}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             className="w-full bg-transparent border-0 border-b border-outline-variant py-4 text-xl placeholder:text-surface-variant focus:ring-0 focus:outline-none transition-colors duration-300"
@@ -76,15 +84,42 @@ function GlowInput({
   );
 }
 
-export default function ReserveForm({ onSuccess }: { onSuccess: () => void }) {
+export default function ReserveForm({
+  treatmentId,
+  slotId,
+  onSuccess,
+}: {
+  treatmentId: string | null;
+  slotId: string | null;
+  onSuccess: () => void;
+}) {
   const [agreed, setAgreed] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = () => {
+  // Form states
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [intentions, setIntentions] = useState("");
+
+  const handleSubmit = async () => {
     if (!agreed) return;
-    setSubmitted(true);
-    setTimeout(() => onSuccess(), 800);
+    
+    setLoading(true);
+    setError(null);
+
+    // Simulate loading and success
+    setTimeout(() => {
+      setSubmitted(true);
+      setTimeout(() => {
+        setLoading(false);
+        onSuccess();
+      }, 500);
+    }, 1000);
   };
+
+  const isFormValid = name.trim() !== "" && email.trim() !== "" && agreed && !submitted && !loading;
 
   return (
     <motion.section
@@ -117,10 +152,21 @@ export default function ReserveForm({ onSuccess }: { onSuccess: () => void }) {
         viewport={viewportOnce}
       >
         <motion.div variants={fadeUp}>
-          <GlowInput label="Full Name" placeholder="Julian Vane" />
+          <GlowInput
+            label="Full Name"
+            placeholder="Julian Vane"
+            value={name}
+            onChange={setName}
+          />
         </motion.div>
         <motion.div variants={fadeUp}>
-          <GlowInput label="Email Address" type="email" placeholder="julian@alchemist.digital" />
+          <GlowInput
+            label="Email Address"
+            type="email"
+            placeholder="julian@alchemist.digital"
+            value={email}
+            onChange={setEmail}
+          />
         </motion.div>
         <motion.div className="md:col-span-2" variants={fadeUp}>
           <GlowInput
@@ -128,9 +174,22 @@ export default function ReserveForm({ onSuccess }: { onSuccess: () => void }) {
             type="textarea"
             placeholder="Describe any specific focus areas for your treatment..."
             fullWidth
+            value={intentions}
+            onChange={setIntentions}
           />
         </motion.div>
       </motion.div>
+
+      {/* Error Display - Keep for structure but won't be used */}
+      {error && (
+        <motion.div
+          className="text-error font-label text-xs tracking-wider uppercase text-red-400 bg-red-950/20 border border-red-900/30 rounded-lg p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          {error}
+        </motion.div>
+      )}
 
       {/* Agreement checkbox */}
       <motion.div
@@ -173,9 +232,9 @@ export default function ReserveForm({ onSuccess }: { onSuccess: () => void }) {
       <motion.button
         className="w-full md:w-auto px-16 py-6 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full font-label text-sm tracking-[0.2em] uppercase shadow-xl relative overflow-hidden disabled:opacity-40"
         onClick={handleSubmit}
-        disabled={!agreed || submitted}
-        whileHover={{ scale: agreed ? 1.04 : 1 }}
-        whileTap={{ scale: agreed ? 0.97 : 1 }}
+        disabled={!isFormValid}
+        whileHover={{ scale: isFormValid ? 1.04 : 1 }}
+        whileTap={{ scale: isFormValid ? 0.97 : 1 }}
         transition={{ type: "spring", stiffness: 400, damping: 18 }}
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -189,7 +248,17 @@ export default function ReserveForm({ onSuccess }: { onSuccess: () => void }) {
           transition={{ duration: 0.6, ease: "easeInOut" }}
         />
         <AnimatePresence mode="wait">
-          {submitted ? (
+          {loading ? (
+            <motion.span
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center justify-center gap-2"
+            >
+              <span className="w-4 h-4 rounded-full border-2 border-[#e6d5b4]/20 border-t-[#e6d5b4] animate-spin" />
+              Manifesting Ritual...
+            </motion.span>
+          ) : submitted ? (
             <motion.span
               key="done"
               initial={{ opacity: 0, scale: 0.8 }}

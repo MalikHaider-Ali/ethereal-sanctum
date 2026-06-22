@@ -9,8 +9,10 @@ import {
 } from "framer-motion";
 import { viewportOnce } from "../animations";
 
-const treatmentOptions = [
+// Static treatment options
+const staticTreatmentOptions = [
   {
+    id: "opt-1",
     icon: "waves",
     duration: "90 MIN",
     title: "Oceanic Drift",
@@ -18,6 +20,7 @@ const treatmentOptions = [
       "A weightless sensory deprivation experience enhanced with mineral-rich thermal waters.",
   },
   {
+    id: "opt-2",
     icon: "auto_awesome",
     duration: "120 MIN",
     title: "Celestial Attunement",
@@ -26,6 +29,7 @@ const treatmentOptions = [
     featured: true,
   },
   {
+    id: "opt-3",
     icon: "eco",
     duration: "60 MIN",
     title: "Botanical Alchemy",
@@ -33,13 +37,48 @@ const treatmentOptions = [
       "Custom-blended herbal oils designed to restore your skin's natural luminescence.",
   },
   {
+    id: "opt-4",
     icon: "flare",
     duration: "75 MIN",
     title: "Solar Radiance",
     description:
       "Heat-based therapy focusing on circulation and metabolic revitalization.",
   },
+  {
+    id: "opt-5",
+    icon: "face",
+    duration: "75 MIN",
+    title: "Luminous Facial",
+    description:
+      "A regenerative journey utilizing ionized gold particles and deep cellular hydration.",
+  },
+  {
+    id: "opt-6",
+    icon: "spa",
+    duration: "90 MIN",
+    title: "Obsidian Body Wrap",
+    description:
+      "Detoxifying volcanic clay infusion followed by a silk-protein moisture seal.",
+  },
 ];
+
+const getCategoryIcon = (category: string, name: string) => {
+  const cat = category?.toLowerCase() || "";
+  const n = name?.toLowerCase() || "";
+  if (n.includes("facial") || cat.includes("face")) return "face";
+  if (n.includes("ritual") || cat.includes("ritual")) return "auto_awesome";
+  if (n.includes("body") || n.includes("wrap") || cat.includes("body")) return "spa";
+  if (n.includes("alchemy") || n.includes("botanical")) return "eco";
+  return "waves";
+};
+
+interface MappedTreatment {
+  id: string;
+  icon: string;
+  duration: string;
+  title: string;
+  description: string;
+}
 
 function TreatmentCard({
   t,
@@ -47,7 +86,7 @@ function TreatmentCard({
   selected,
   onSelect,
 }: {
-  t: (typeof treatmentOptions)[0];
+  t: MappedTreatment;
   index: number;
   selected: boolean;
   onSelect: () => void;
@@ -156,15 +195,20 @@ function TreatmentCard({
 export default function TreatmentSelector({
   selected,
   onSelect,
+  treatments = [],
 }: {
   selected: string;
   onSelect: (t: string) => void;
+  treatments?: any[];
 }) {
+  // Always use static treatment options, ignore the treatments prop
+  const options = staticTreatmentOptions;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {treatmentOptions.map((t, i) => (
+      {options.map((t, i) => (
         <TreatmentCard
-          key={t.title}
+          key={t.id}
           t={t}
           index={i}
           selected={selected === t.title}
